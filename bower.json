@@ -1,0 +1,18 @@
+{
+  "name": "ecotracks",
+  "version": "0.0.0",
+  "authors": [
+    "danse <f.occhipinti@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.4.4"
+  }
+}
