@@ -75,14 +75,14 @@ getValues (countryName:countryCode:indicatorName:indicatorCode:values) =
 
 makePoint :: Indicator -> (String, String) -> (Year, DataPoint)
 makePoint indicator (h,r) = (h, point)
-  where point    = H.insert withYear indicator r
-        withYear = H.insert H.empty "Year" h
+  where point    = H.insert indicator r withYear
+        withYear = H.insert "Year" h H.empty
 
 makeDataSet :: [String] -> [String] -> (Country, H.HashMap Year DataPoint)
 makeDataSet h r = (country, points)
   where country = getCountry h
         indicator = getIndicator h
-        pairs = getValues $ zip h r
+        pairs = zip (getValues h) (getValues r)
         points = H.fromList $ map (makePoint indicator) pairs
 
 makeDataSets :: [[String]] -> CountryDataSets
@@ -95,7 +95,7 @@ step1 :: [L.ByteString] -> [CountryDataSets]
 step1 = map (makeDataSets . decodeFile)
 
 transformDataSet :: DataSet -> Year -> DataPoint -> DataPoint
-transformDataSet s y p = H.union (H.lookupDefault H.empty y) p
+transformDataSet s y p = H.union (H.lookupDefault H.empty y s) p
   
 mergeTwoDataSets :: DataSet -> DataSet -> DataSet
 mergeTwoDataSets s1 s2 = H.mapWithKey (transformDataSet s1) s2
@@ -111,26 +111,28 @@ byTwo :: [a] -> [(a,a)]
 byTwo []       = []
 byTwo (a:[])   = []
 byTwo (a:b:[]) = [(a,b)]
-byTwo (a:b:c)  = [(a,b)]:(byTwo c)
+byTwo (a:b:c)  = (a,b):(byTwo c)
 
 takeSecond :: [(a,b)] -> [b]
 takeSecond = map snd
 
 compareYear :: Year -> Year -> Ordering
-compareYear y1 y2 = (read y1 :: Int) > (read y2 :: Int)
+compareYear y1 y2 = compare (read y1 :: Int) (read y2 :: Int)
 
 makePairs :: [(Year, DataPoint)] -> [(DataPoint, DataPoint)]
 makePairs l =
-  let sorted = List.sortBy compareYear l
+  let sorted = List.sortBy (\x y -> compareYear (fst x) (fst y)) l
   in byTwo $ takeSecond sorted
 
-allValuesSet :: DataSet -> Bool
-allValuesSet = all (/="") $ H.elems
+allValuesSet :: DataPoint -> Bool
+allValuesSet = (all (/="")) . H.elems
+
+removeEmpty :: DataSet -> DataSet
+removeEmpty = H.filter allValuesSet
 
 makeLines :: CountryDataSets -> CountryLinePoints
 makeLines = H.map (makePairsFromDict . removeEmpty)
-  where removeEmpty = filter allValuesSet
-        makePairsFromDict = makePairs . H.toList
+  where makePairsFromDict = makePairs . H.toList
 
 -- encode :: CountryLinePoints -> H.HashMap Country L.ByteString
 
