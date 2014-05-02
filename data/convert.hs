@@ -7,13 +7,13 @@ Name, Code, .., 1963, 1964, ...
 Albany, AL, .., 34.2, 67.1, ... (may be empty)
 
 Whereas output files should be for each country like:
-[{
-  start: {year: 1963, indicator1: 34.2, indicator2: '45%'},
-  stop: ...
- }, {
-  start: ...
-  stop: ...
-}]
+[[
+  {year: 1963, indicator1: 34.2, indicator2: '45%'}, // start
+   ... // stop
+ ], [
+   ... // start
+   ... // stop
+]]
 
 That means, an array of pairs of points, each of them representing the
 beginning and the end of a line. I opt to skip a point if it has an
@@ -28,6 +28,7 @@ import qualified Data.Vector as V
 import System.Environment
 import Control.Monad
 import Text.JSON
+import System.Directory
 import qualified Data.HashMap.Lazy as H
 import qualified Data.List as List
 
@@ -81,8 +82,8 @@ makePoint indicator (h,r) = (h, point)
 
 makeDataSet :: [String] -> [String] -> (Country, H.HashMap Year DataPoint)
 makeDataSet h r = (country, points)
-  where country = getCountry h
-        indicator = getIndicator h
+  where country = getCountry r
+        indicator = getIndicator r
         pairs = zip (getValues h) (getValues r)
         points = H.fromList $ map (makePoint indicator) pairs
 
@@ -154,8 +155,13 @@ toJS = H.toList . (H.map linePointsToBytes)
 convert :: [L.ByteString] -> [(Country,String)]
 convert = toJS . makeLines . merge . step1
 
+outdir = "converted"
+
+writeConverted (name, content) = writeFile (outdir ++ "/" ++ name) content
+
 main = do
   args <- getArgs
   contents <- mapM L.readFile args
-  mapM (\(name, content) -> writeFile name content) (convert contents)
+  createDirectoryIfMissing False outdir
+  mapM writeConverted (convert contents)
   return ()
