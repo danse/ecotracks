@@ -27,6 +27,7 @@ import Data.Csv
 import qualified Data.Vector as V
 import System.Environment
 import Control.Monad
+import Text.JSON
 import qualified Data.HashMap.Lazy as H
 import qualified Data.List as List
 
@@ -58,7 +59,7 @@ simplify :: (V.Vector (V.Vector L.ByteString)) -> [[String]]
 simplify v = map (map BLChar8.unpack) (map V.toList (V.toList v))
 
 decodeFile :: L.ByteString -> [[String]]
-decodeFile content = simplify $ rightDecoded $ decode NoHeader cleaned
+decodeFile content = simplify $ rightDecoded $ Data.Csv.decode NoHeader cleaned
   where cleaned = deleteFirstTwoLines content
 
 getIndicator :: [String] -> Indicator
@@ -134,9 +135,27 @@ makeLines :: CountryDataSets -> CountryLinePoints
 makeLines = H.map (makePairsFromDict . removeEmpty)
   where makePairsFromDict = makePairs . H.toList
 
--- encode :: CountryLinePoints -> H.HashMap Country L.ByteString
+dataPointToJS :: DataPoint -> JSValue
+dataPointToJS = JSObject . toJSObject . H.toList . mapPoint
+  where mapPoint = H.map (JSString . toJSString)
+
+linePointToJS :: (DataPoint, DataPoint) -> JSValue
+linePointToJS (a, b) =
+  let c = dataPointToJS a
+      d = dataPointToJS b
+  in JSArray [c, d]
+
+linePointsToBytes :: LinePoints -> String
+linePointsToBytes = Text.JSON.encode . (map linePointToJS)
+
+toJS :: CountryLinePoints -> [(Country,String)]
+toJS = H.toList . (H.map linePointsToBytes)
+
+convert :: [L.ByteString] -> [(Country,String)]
+convert = toJS . makeLines . merge . step1
 
 main = do
   args <- getArgs
   contents <- mapM L.readFile args
+  mapM (\(name, content) -> writeFile name content) (convert contents)
   return ()
