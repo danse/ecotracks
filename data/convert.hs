@@ -108,12 +108,12 @@ mergeTwo s1 s2 = H.unionWith mergeTwoDataSets s1 s2
 merge :: [CountryDataSets] -> CountryDataSets
 merge = foldl1 mergeTwo
 
--- group elements in a list by two. discard the last one if odd
+-- group elements in a list by two, duplicating one element every time
 byTwo :: [a] -> [(a,a)]
 byTwo []       = []
 byTwo (a:[])   = []
 byTwo (a:b:[]) = [(a,b)]
-byTwo (a:b:c)  = (a,b):(byTwo c)
+byTwo (a:b:c)  = (a,b):(byTwo (b:c))
 
 takeSecond :: [(a,b)] -> [b]
 takeSecond = map snd
