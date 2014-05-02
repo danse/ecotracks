@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <script src="bower_components/d3/d3.js"></script>
+    <script>
+      var countries = [];
+      var scale = d3.scale.linear().domain([-1,1]).range([-10,10]);
+      var a1 = function(d) { return scale(d['FP.CPI.TOTL.ZG']); };
+      var a2 = function(d) { return scale(d['SL.UEM.TOTL.ZS']); };
+      d3.text('data/index', function(content) {
+        data = content.split('\n').filter(function(d) { return d; });
+        data.map(function(d) {
+          d3.json('data/converted/'+d, function(data) {
+            countries.push({
+              name: d,
+              lines: data
+            });
+            var enterCountries = d3.select('g.root')
+              .selectAll('g.country')
+              .data(countries, function(d) { return d.name; })
+              .enter()
+              .append('g').attr('class','country');
+
+            enterCountries
+              .append('title').text(function(d) { return d.name; });
+
+            enterCountries
+              .selectAll('line')
+              .data(function(d) { return d.lines; })
+              .enter()
+              .append('line')
+              .attr('x1', function(d) { return a1(d[0]); })
+              .attr('x2', function(d) { return a1(d[1]); })
+              .attr('y1', function(d) { return a2(d[0]); })
+              .attr('y2', function(d) { return a2(d[1]); });
+          });
+        });
+      });
+    </script>
+    <style>
+      svg { background: black; }
+      line { stroke: white; }
+      g.country:hover line { stroke: red }
+    </style>
+  </head>
+  <body>
+    <svg width="800" height="400">
+      <g class="root" transform="translate(10, 10)"></g>
+    </svg>
+  </body>
+</html>

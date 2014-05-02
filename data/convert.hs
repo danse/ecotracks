@@ -69,7 +69,7 @@ getIndicator (countryName:countryCode:indicatorName:indicatorCode:values) =
 
 getCountry :: [String] -> Country
 getCountry (countryName:countryCode:indicatorName:indicatorCode:values) =
-  countryCode
+  countryName
 
 getValues :: [String] -> [String]
 getValues (countryName:countryCode:indicatorName:indicatorCode:values) =
