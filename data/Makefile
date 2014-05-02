@@ -2,7 +2,10 @@
 unemployment = unemployment/SL.UEM.TOTL.ZS_Indicator_en_csv_v2.csv
 inflation = inflation/FP.CPI.TOTL.ZG_Indicator_en_csv_v2.csv
 
-all: $(unemployment) $(inflation) convert
+index: conversion
+	ls converted > index
+
+conversion: $(unemployment) $(inflation) convert
 	./convert $(unemployment) $(inflation)
 
 convert: convert.hs
