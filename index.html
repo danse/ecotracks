@@ -3,7 +3,7 @@
     <script src="bower_components/d3/d3.js"></script>
     <script>
       var countries = [];
-      var scale = d3.scale.linear().domain([-1,1]).range([-10,10]);
+      var scale = d3.scale.linear().domain([0,1]).range([0,30]);
       var a1 = function(d) { return scale(d['FP.CPI.TOTL.ZG']); };
       var a2 = function(d) { return scale(d['SL.UEM.TOTL.ZS']); };
       d3.text('data/index', function(content) {
@@ -43,7 +43,7 @@
     </style>
   </head>
   <body>
-    <svg width="800" height="400">
+    <svg width="1200" height="600">
       <g class="root" transform="translate(10, 10)"></g>
     </svg>
   </body>
