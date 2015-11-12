@@ -31,6 +31,8 @@
               .data(function(d) { return d.lines; })
               .enter()
               .append('line')
+              .transition()
+              .delay(function (d, i) { return i * 500; })
               .attr('style', function (d, i) {
                 var o = scales.opacity(i);
                 return 'opacity: '+o;
