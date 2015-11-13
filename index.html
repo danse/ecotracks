@@ -10,6 +10,15 @@
       };
       var a1 = function(d) { return scale(d['FP.CPI.TOTL.ZG']); };
       var a2 = function(d) { return scale(d['SL.UEM.TOTL.ZS']); };
+      var zoom = d3.behavior.zoom()
+          .on('zoom', zoomed);
+
+      function zoomed() {
+        d3.select('g.root')
+          .attr("transform", "translate(" + d3.event.translate + ") " +
+                             "scale(" + d3.event.scale + ")");
+      }
+
       d3.text('data/index', function(content) {
 
         data = content.split('\n').filter(function(d) { return d; });
@@ -36,6 +45,7 @@
               .data(function(d) { return d.lines; })
               .enter()
               .append('line')
+              .call(zoom)
               .transition()
               .delay(function (d, i) { return i * 500; })
               .attr('style', function (d, i) {
