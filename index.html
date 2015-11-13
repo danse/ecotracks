@@ -10,6 +10,7 @@
       };
       var x = function(d) { return scales.linear(d['FP.CPI.TOTL.ZG']); };
       var y = function(d) { return scales.linear(d['SL.UEM.TOTL.ZS']); };
+      // simple zoom example http://bl.ocks.org/mbostock/6226534      
       var zoom = d3.behavior.zoom()
           .on('zoom', zoomed);
 
