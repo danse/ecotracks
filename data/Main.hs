@@ -47,7 +47,7 @@ type CountryDataSets = H.HashMap Country DataSet
 type LinePoints = [(DataPoint, DataPoint)]
 type CountryLinePoints = H.HashMap Country LinePoints
 
-deleteFirstTwoLines s = BLChar8.unlines $ tail $ tail $ BLChar8.lines s
+dropFirstFourLines = BLChar8.unlines . drop 4 . BLChar8.lines
 
 type Decoded = (V.Vector (V.Vector L.ByteString))
 type Row = (V.Vector L.ByteString)
@@ -61,7 +61,7 @@ simplify v = map (map BLChar8.unpack) (map V.toList (V.toList v))
 
 decodeFile :: L.ByteString -> [[String]]
 decodeFile content = simplify $ rightDecoded $ Data.Csv.decode NoHeader cleaned
-  where cleaned = deleteFirstTwoLines content
+  where cleaned = dropFirstFourLines content
 
 getIndicator :: [String] -> Indicator
 getIndicator (countryName:countryCode:indicatorName:indicatorCode:values) =
