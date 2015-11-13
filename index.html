@@ -2,6 +2,7 @@
   <head>
     <script src="bower_components/d3/d3.js"></script>
     <script>
+
       var countries = [];
       var scale = d3.scale.linear().domain([0,1]).range([0,30]);
       var scales = {
@@ -10,13 +11,17 @@
       var a1 = function(d) { return scale(d['FP.CPI.TOTL.ZG']); };
       var a2 = function(d) { return scale(d['SL.UEM.TOTL.ZS']); };
       d3.text('data/index', function(content) {
+
         data = content.split('\n').filter(function(d) { return d; });
+
         data.map(function(d) {
+
           d3.json('data/converted/'+d, function(data) {
             countries.push({
               name: d,
               lines: data
             });
+
             var enterCountries = d3.select('g.root')
               .selectAll('g.country')
               .data(countries, function(d) { return d.name; })
@@ -44,14 +49,19 @@
           });
         });
       });
+
     </script>
     <style>
+
       svg { background: black; }
+
       line { stroke: white; }
+
       g.country:hover line {
         stroke: red;
         stroke-width: 5;
       }
+
     </style>
   </head>
   <body>
