@@ -4,12 +4,12 @@
     <script>
 
       var countries = [];
-      var scale = d3.scale.linear().domain([0,1]).range([0,30]);
       var scales = {
+        linear: d3.scale.linear().domain([0,1]).range([0,30]),
         opacity: d3.scale.linear().domain([0, 40]).range([0, 1])
       };
-      var a1 = function(d) { return scale(d['FP.CPI.TOTL.ZG']); };
-      var a2 = function(d) { return scale(d['SL.UEM.TOTL.ZS']); };
+      var x = function(d) { return scales.linear(d['FP.CPI.TOTL.ZG']); };
+      var y = function(d) { return scales.linear(d['SL.UEM.TOTL.ZS']); };
       var zoom = d3.behavior.zoom()
           .on('zoom', zoomed);
 
@@ -52,10 +52,10 @@
                 var o = scales.opacity(i);
                 return 'opacity: '+o;
               })
-              .attr('x1', function(d) { return a1(d[0]); })
-              .attr('x2', function(d) { return a1(d[1]); })
-              .attr('y1', function(d) { return a2(d[0]); })
-              .attr('y2', function(d) { return a2(d[1]); });
+              .attr('x1', function(d) { return x(d[0]); })
+              .attr('x2', function(d) { return x(d[1]); })
+              .attr('y1', function(d) { return y(d[0]); })
+              .attr('y2', function(d) { return y(d[1]); });
           });
         });
       });
