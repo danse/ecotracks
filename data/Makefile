@@ -1,15 +1,12 @@
 
-unemployment = unemployment/SL.UEM.TOTL.ZS_Indicator_en_csv_v2.csv
-inflation = inflation/FP.CPI.TOTL.ZG_Indicator_en_csv_v2.csv
+unemployment = unemployment/sl.uem.totl.zs_Indicator_en_csv_v2.csv
+inflation = inflation/fp.cpi.totl.zg_Indicator_en_csv_v2.csv
 
 index: conversion
 	ls converted > index
 
-conversion: $(unemployment) $(inflation) convert
-	./convert $(unemployment) $(inflation)
-
-convert: convert.hs
-	ghc $<
+conversion: $(unemployment) $(inflation)
+	cabal run data $(unemployment) $(inflation)
 
 $(unemployment): unemployment unemployment.zip
 	unzip -d $^

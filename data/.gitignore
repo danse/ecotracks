@@ -1,0 +1,6 @@
+.cabal-sandbox/
+dist/
+converted/
+Setup.hs
+index
+cabal.sandbox.config
