@@ -14,3 +14,7 @@ Requires haskell's cabal. Then spin a server like in
 
     python -m http.serve 8080
 
+The country can be selected hovering with the mouse. Here is how it
+looks after drawing:
+
+![preview](preview.png)
